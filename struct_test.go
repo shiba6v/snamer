@@ -8,7 +8,7 @@ import (
 	"strings"
 	"testing"
 
-	"shiba6v.com/snamer"
+	"github.com/shiba6v/snamer"
 )
 
 type TestPascalStructToCamelExample struct {

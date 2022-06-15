@@ -3,6 +3,11 @@
 
 Package snamer renames fields of a struct. It is useful to create snake_case json from a struct. In Golang, an initial character of a field must be uppercase to export the field.
 
+## Install
+```
+go get github.com/shiba6v/snamer
+```
+
 ## Example
 ```go
 type User struct {

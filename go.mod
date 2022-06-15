@@ -1,3 +1,3 @@
-module shiba6v.com/snamer
+module github.com/shiba6v/snamer
 
 go 1.18
