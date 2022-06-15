@@ -1,8 +1,11 @@
 package snamer_test
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
+	"regexp"
+	"strings"
 	"testing"
 
 	"shiba6v.com/snamer"
@@ -116,10 +119,14 @@ func TestPascalStructToCamel(t *testing.T) {
 	for _, ex := range examples {
 		t.Run(
 			"TestPascalStructToCamel_"+ex.Name, func(t *testing.T) {
+				t.Parallel()
 
 				inputType := reflect.TypeOf(ex.Input)
 
-				v, _ := snamer.PascalStructToCamel(ex.Input)
+				v, err := snamer.PascalStructToCamel(ex.Input)
+				if err != nil {
+					t.Errorf("Error: %s", err)
+				}
 
 				// 入力がpointerの場合にpointerから勝手に書き変わらないことを一応チェック
 				if inputType != reflect.TypeOf(ex.Input) {
@@ -133,11 +140,59 @@ func TestPascalStructToCamel(t *testing.T) {
 	}
 }
 
-func ExamplePascalStructToCamel() {
+func ExamplePascalStructToCamel_basic() {
 	user := User{UserId: 1}
 	result, err := snamer.PascalStructToCamel(user)
 	if err != nil {
 		fmt.Println(err)
 	}
-	fmt.Println(result) // map[string]interface{}{"userId":1}
+	fmt.Println(result)
+	// Output: map[userId:1]
+}
+
+func ExamplePascalStructToCamel_json() {
+	user := User{UserId: 1}
+	result, _ := snamer.PascalStructToCamel(user)
+	data, err := json.Marshal(result)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(data))
+	// Output: {"userId":1}
+}
+
+func ExamplePascalStructToSnake_basic() {
+	user := User{UserId: 1}
+	result, err := snamer.PascalStructToSnake(user)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(result)
+	// Output: map[user_id:1]
+}
+
+func ExamplePascalStructToSnake_json() {
+	user := User{UserId: 1}
+	result, _ := snamer.PascalStructToSnake(user)
+	data, err := json.Marshal(result)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(data))
+	// Output: {"user_id":1}
+}
+
+func ExampleAnyStructToAny_pascalToConstantCase() {
+	user := User{UserId: 1}
+	result, _ := snamer.AnyStructToAny(user, func(s string) string {
+		// PascalCase To CONSTANT_CASE
+		re := regexp.MustCompile(`([A-Z])`)
+		return strings.ToUpper(s[0:1] + re.ReplaceAllString(s[1:], `_$1`))
+	})
+	data, err := json.Marshal(result)
+	if err != nil {
+		fmt.Println(err)
+	}
+	fmt.Println(string(data))
+	// Output: {"USER_ID":1}
 }

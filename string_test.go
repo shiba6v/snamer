@@ -28,3 +28,25 @@ func TestPascalStringToCamel(t *testing.T) {
 			})
 	}
 }
+
+func TestPascalStringToSnake(t *testing.T) {
+	fmt.Print("TestPascalStringToSnake\n")
+	examples := []map[string]string{
+		{"input": "ExampleName", "expected": "example_name"},
+		{"input": "A", "expected": "a"},
+		{"input": "aA", "expected": "a_a"},
+		{"input": "AA", "expected": "a_a"},
+	}
+	for _, ex := range examples {
+		t.Run(
+			"TestPascalStringToCamel: "+ex["input"], func(t *testing.T) {
+				t.Parallel()
+				s := ex["input"]
+				expected := ex["expected"]
+				result := pascalStringToSnake(s)
+				if result != expected {
+					t.Errorf("Error input:%v result: %v, expected:%v", s, result, expected)
+				}
+			})
+	}
+}
