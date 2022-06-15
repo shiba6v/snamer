@@ -15,6 +15,9 @@ import (
 func convertFields(v reflect.Value, fieldConversionFunc func(s string) string) (interface{}, error) {
 	// https://qiita.com/nirasan/items/b6b89f8c61c35b563e8c
 	// https://qiita.com/tsubaki_dev/items/a8ffd28d4513e8750355
+	if !v.CanInterface() {
+		return nil, nil
+	}
 
 	if v.Kind() == reflect.Ptr {
 		// pointer dereference (Pointer of Struct to Struct)

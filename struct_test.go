@@ -34,6 +34,7 @@ type Post2 struct {
 type Primitive1 struct {
 	Uint uint
 }
+
 type Primitive2 struct {
 	Bool   bool
 	Int    int
@@ -51,6 +52,11 @@ type Primitive2 struct {
 	Float64    float64
 	Complex64  complex64
 	Complex128 complex128
+}
+
+type UserWithUnexportedField struct {
+	Id   int
+	text string
 }
 
 func TestPascalStructToCamel(t *testing.T) {
@@ -115,11 +121,17 @@ func TestPascalStructToCamel(t *testing.T) {
 			Input:    map[string]interface{}{"u": [2]User{{1}, {2}}},
 			Expected: map[string]interface{}{"u": []interface{}{map[string]interface{}{"userId": 1}, map[string]interface{}{"userId": 2}}},
 		},
+		{
+			Name:     "10: unexported field",
+			Input:    UserWithUnexportedField{1, "a"},
+			Expected: map[string]interface{}{"id": 1, "text": interface{}(nil)},
+		},
 	}
 	for _, ex := range examples {
 		t.Run(
 			"TestPascalStructToCamel_"+ex.Name, func(t *testing.T) {
-				t.Parallel()
+				// t.Parallelでやると、panic時に原因特定がしづらくて困る。
+				// t.Parallel()
 
 				inputType := reflect.TypeOf(ex.Input)
 
